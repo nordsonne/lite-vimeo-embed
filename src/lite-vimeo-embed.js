@@ -26,21 +26,28 @@ class LiteVimeo extends HTMLElement {
         // https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#rule-2---attribute-escape-before-inserting-untrusted-data-into-html-common-attributes
         this.videoId = encodeURIComponent(this.getAttribute('videoid'));
 
-        /**
-         * Lo, the vimeo placeholder image!  (aka the thumbnail, poster image, etc)
-         * We have to use the Vimeo API.
-         */
-        let { width, height } = getThumbnailDimensions(this.getBoundingClientRect());
-        const devicePixelRatio = window.devicePixelRatio || 1;
-        width *= devicePixelRatio;
-        height *= devicePixelRatio;
+        let posterUrl = encodeURIComponent(this.getAttribute('posterUrl'));
+        if(!posterUrl){
+            /**
+             * Lo, the vimeo placeholder image!  (aka the thumbnail, poster image, etc)
+             * We have to use the Vimeo API.
+             */
+            let { width, height } = getThumbnailDimensions(this.getBoundingClientRect());
+            const devicePixelRatio = window.devicePixelRatio || 1;
+            width *= devicePixelRatio;
+            height *= devicePixelRatio;
 
-        let thumbnailUrl = `https://lite-vimeo-embed.now.sh/thumb/${this.videoId}`;
-        thumbnailUrl += `.${canUseWebP() ? 'webp' : 'jpg'}`;
-        thumbnailUrl += `?mw=${width}&mh=${height}&q=${devicePixelRatio > 1 ? 70 : 85}`;
+            let thumbnailUrl = `https://lite-vimeo-embed.now.sh/thumb/${this.videoId}`;
+            thumbnailUrl += `.${canUseWebP() ? 'webp' : 'jpg'}`;
+            thumbnailUrl += `?mw=${width}&mh=${height}&q=${devicePixelRatio > 1 ? 70 : 85}`;
+            // Warm the connection for the poster image
+            addPrefetch('preload', thumbnailUrl, 'image');
+            this.style.backgroundImage = `url("${thumbnailUrl}")`;
 
-        this.style.backgroundImage = `url("${thumbnailUrl}")`;
-
+        }else{
+            addPrefetch('preload', posterUrl, 'image');
+            this.style.backgroundImage = `url("${decodeURIComponent(posterUrl)}")`;
+        }
         const playBtn = document.createElement('button');
         playBtn.type = 'button';
         playBtn.classList.add('ltv-playbtn');
