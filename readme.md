@@ -26,7 +26,7 @@ To use the custom embed you will need to:
 <script src="http://unpkg.com/lite-vimeo-embed"></script>
 
 <!-- Use the element. You may define uses before the scripts are parsed and executed. -->
-<lite-vimeo videoid="357274789"></lite-vimeo>
+<lite-vimeo videoid="357274789" posterUrl="path/to/poster.jpg"></lite-vimeo>
 ```
 
 ## Pro-usage
