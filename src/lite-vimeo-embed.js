@@ -45,7 +45,7 @@ class LiteVimeo extends HTMLElement {
             this.style.backgroundImage = `url("${thumbnailUrl}")`;
 
         }else{
-            addPrefetch('preload', posterUrl, 'image');
+            addPrefetch('preload', decodeURIComponent(posterUrl), 'image');
             this.style.backgroundImage = `url("${decodeURIComponent(posterUrl)}")`;
         }
         const playBtn = document.createElement('button');
